@@ -15,7 +15,7 @@ public class SoftBody : MonoBehaviour
     public float damper;
     public float spring;
 
-    private float bodyRadius = 0.5f;
+    private float bodyRadius = 1.0f;
 
     private void Awake()
     {
@@ -55,7 +55,7 @@ public class SoftBody : MonoBehaviour
             rb.constraints = RigidbodyConstraints.FreezeRotationY;
 
             SphereCollider sc = bone.bone.AddComponent<SphereCollider>();
-            sc.radius = 0.001f;
+            sc.radius = 0.005f;
         }
 
         foreach (Bone b1 in bones)
