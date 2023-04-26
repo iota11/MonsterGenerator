@@ -65,6 +65,7 @@ public class ProceduralLeg: MonoBehaviour
         oldPos = m_transform.position;
         initial_rotation = m_transform.localRotation;
         pos_offset = m_transform.position - body_transform.position;
+        Debug.Log("i am at:" + m_transform.position + " body at" + body_transform.position);
         legStride =2* strideRatio * Mathf.Sqrt(Mathf.Pow(legLength, 2) - Mathf.Pow(end_transform.position.y, 2)); // may use ray cast insead
     }
 
