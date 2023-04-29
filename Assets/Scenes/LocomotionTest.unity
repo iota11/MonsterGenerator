@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 149697766}
   - component: {fileID: 149697767}
+  - component: {fileID: 149697768}
   m_Layer: 0
   m_Name: meat
   m_TagString: Untagged
@@ -172,12 +173,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e75ea695dcda46a0a6783d35d92d144, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mass: 0
-  drag: 0.5
+  mass: 1
+  drag: 5
   angularDrag: 5
-  damper: 4
-  spring: 30
-  uprightForce: 100
+  damper: 10
+  spring: 50
+  uprightTorque: 500
+  uprightForce: 5
+  centerOfMass: {x: 0, y: 0, z: 0}
+--- !u!114 &149697768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 149697765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 036551fc1d1374265ac158cfedb4a232, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  force: 50
 --- !u!1 &753654428
 GameObject:
   m_ObjectHideFlags: 0
@@ -1268,7 +1284,7 @@ MonoBehaviour:
   m_transform: {fileID: 871441836662370215}
   noise_scale: 0.5
   noise_speed: 1
-  speed: 5
+  speed: 10
   sessionTime: 0
   movement: {x: 0, y: 0, z: 0}
   movementWorld: {x: 0, y: 0, z: 0}
@@ -2979,7 +2995,9 @@ MonoBehaviour:
   angularDrag: 15
   damper: 10
   spring: 50
+  uprightTorque: 0
   uprightForce: 0
+  centerOfMass: {x: 0, y: 0, z: 0}
 --- !u!1 &3593513983434848632
 GameObject:
   m_ObjectHideFlags: 0
@@ -5428,7 +5446,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8374535982954636193}
   - component: {fileID: 1752325934635628111}
-  - component: {fileID: 8374535982954636194}
   m_Layer: 0
   m_Name: legs
   m_TagString: Untagged
@@ -5609,19 +5626,6 @@ Transform:
   m_Father: {fileID: 7423963513848993937}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &8374535982954636194
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8014525955009553378}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 4.746148, y: 2.0481827, z: 5.196072}
-  m_Center: {x: -2.9239216, y: -3.806744, z: -1.9931834}
 --- !u!4 &8450871318780071432
 Transform:
   m_ObjectHideFlags: 0

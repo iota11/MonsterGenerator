@@ -19,6 +19,8 @@ public class SoftBody : MonoBehaviour
     public float uprightTorque;
     public float uprightForce;
 
+    public Vector3 centerOfMass;
+
     private float bodyRadius = 1.0f;
 
     private float massRadius = 0.0075f;
@@ -141,7 +143,7 @@ public class SoftBody : MonoBehaviour
             if (currentDistance > bone.offsetRadius)
             {
                 var desiredDir = desiredPos - bone.bone.transform.position;
-                bone.bone.GetComponent<Rigidbody>().AddForce(desiredDir * uprightForce);
+                rb.AddForce(desiredDir * uprightForce);
             }
         }
     }
@@ -172,9 +174,30 @@ public class SoftBody : MonoBehaviour
         }
     }
 
+    Vector3 CalculateCenterOfMass()
+    {
+        Vector3 sum = Vector3.zero;
+        var count = 0;
+        foreach (Bone bone in bones)
+        {
+            var rb = bone.bone.GetComponent<Rigidbody>();
+            sum += bone.bone.transform.position * rb.mass;
+            count++;
+        }
+        return sum / count;
+    }
+
+    void OnDrawGizmos()
+    {
+        // Draw a yellow sphere at the transform's position
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(centerOfMass, 1);
+    }
+
     // Update is called once per frame
     void Update()
     {
         KeepUprightTorque();
+        centerOfMass = CalculateCenterOfMass();
     }
 }
