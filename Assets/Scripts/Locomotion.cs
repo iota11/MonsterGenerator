@@ -15,29 +15,22 @@ public class Locomotion : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            Move(Vector3.left);
-        }
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            Move(Vector3.right);
-        }
-        if (Input.GetKey(KeyCode.UpArrow))
-        {
-            Move(Vector3.up);
-        }
-        if (Input.GetKey(KeyCode.DownArrow))
-        {
-            Move(Vector3.down);
-        }
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+        Move(new Vector3(x, 0, z));
     }
 
     void Move(Vector3 dir)
     {
         foreach (Transform limb in transform)
         {
-            limb.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
+            foreach (Transform bone in limb.GetComponentsInChildren<Transform>())
+            {
+                if (bone.childCount == 0 && Random.value >= 0.5)
+                {
+                    bone.gameObject.GetComponent<Rigidbody>().AddForce(dir * force * Random.Range(0.25f, 0.75f));
+                }
+            }
         }
     }
 }

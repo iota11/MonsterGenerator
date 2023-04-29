@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static Unity.VisualScripting.Member;
 
 public class SoftBody : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class SoftBody : MonoBehaviour
 
     public float damper;
     public float spring;
+
+    public float uprightTorque;
+    public float uprightForce;
 
     private float bodyRadius = 1.0f;
 
@@ -32,9 +36,11 @@ public class SoftBody : MonoBehaviour
 
     void IndexLimb(GameObject limb)
     {
+        var rootPosition = transform.position;
         foreach (Transform bone in limb.GetComponentsInChildren<Transform>())
         {
-            Bone b = new Bone(bone.gameObject, limb);
+            var parentPos = bone.parent.position;
+            Bone b = new Bone(bone.gameObject, limb, rootPosition);
             bones.Add(b);
         }
     }
@@ -112,6 +118,7 @@ public class SoftBody : MonoBehaviour
             rb.drag = drag;
             rb.angularDrag = angularDrag;
             rb.constraints = RigidbodyConstraints.FreezeRotationY;
+            //rb.constraints = RigidbodyConstraints.FreezePositionY;
 
             SphereCollider sc = bone.bone.AddComponent<SphereCollider>();
             sc.radius = massRadius;
@@ -120,9 +127,54 @@ public class SoftBody : MonoBehaviour
         ConnectBones();
     }
 
+    void KeepUprightTorque()
+    {
+        foreach (Bone bone in bones)
+        {
+            var rb = bone.bone.GetComponent<Rigidbody>();
+            var springTorque = uprightTorque * Vector3.Cross(rb.transform.up, Vector3.up);
+            var dampTorque = -rb.angularVelocity;
+            rb.AddTorque(springTorque + dampTorque, ForceMode.Acceleration);
+
+            var desiredPos = transform.position + bone.positionOffset;
+            var currentDistance = Vector3.Distance(bone.bone.transform.position, desiredPos);
+            if (currentDistance > bone.offsetRadius)
+            {
+                var desiredDir = desiredPos - bone.bone.transform.position;
+                bone.bone.GetComponent<Rigidbody>().AddForce(desiredDir * uprightForce);
+            }
+        }
+    }
+
+    void KeepUprightFreeze()
+    {
+        foreach (Bone bone in bones)
+        {
+            bone.bone.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+    }
+
+    void KeepUpright()
+    {
+        var rootPos = transform.position;
+        foreach (Bone bone in bones)
+        {
+            //var desiredPos = bone.bone.transform.parent.position + bone.positionOffset;
+            var desiredPos = rootPos + bone.positionOffset;
+            var currentDistance = Vector3.Distance(bone.bone.transform.position, desiredPos);
+            if (currentDistance > bone.offsetRadius)
+            {
+                var desiredDir = desiredPos - bone.bone.transform.position;
+                bone.bone.GetComponent<Rigidbody>().AddForce(desiredDir * uprightForce);
+                //bone.bone.transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
+
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
+        KeepUprightTorque();
     }
 }
