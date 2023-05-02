@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.XR;
 using static Unity.VisualScripting.Member;
 
 public class SoftBody : MonoBehaviour
@@ -23,12 +24,16 @@ public class SoftBody : MonoBehaviour
 
     private float bodyRadius = 1.0f;
 
-    private float massRadius = 0.0075f;
+    private float massRadius = 0.0f;
     private float nborRadius = 1.0f;
-    private float bendingRadius = 2.0f;
+    private float bendingRadius = 3.0f;
 
     private void Awake()
     {
+        Rigidbody rb = transform.AddComponent<Rigidbody>();
+        rb.useGravity = false;
+        rb.constraints = RigidbodyConstraints.FreezeRotationY;
+
         foreach (Transform limb in transform)
         {
             IndexLimb(limb.gameObject);
@@ -42,7 +47,7 @@ public class SoftBody : MonoBehaviour
         foreach (Transform bone in limb.GetComponentsInChildren<Transform>())
         {
             var parentPos = bone.parent.position;
-            Bone b = new Bone(bone.gameObject, limb, rootPosition);
+            Bone b = new Bone(bone.gameObject, limb, rootPosition, bone.rotation);
             bones.Add(b);
         }
     }
@@ -119,8 +124,8 @@ public class SoftBody : MonoBehaviour
             rb.mass = mass;
             rb.drag = drag;
             rb.angularDrag = angularDrag;
-            rb.constraints = RigidbodyConstraints.FreezeRotationY;
-            //rb.constraints = RigidbodyConstraints.FreezePositionY;
+
+            //rb.constraints = RigidbodyConstraints.FreezeRotation;
 
             SphereCollider sc = bone.bone.AddComponent<SphereCollider>();
             sc.radius = massRadius;
@@ -133,10 +138,12 @@ public class SoftBody : MonoBehaviour
     {
         foreach (Bone bone in bones)
         {
+            //bone.bone.transform.rotation = Quaternion.RotateTowards(transform.rotation, bone.origRotation, uprightTorque);
+
             var rb = bone.bone.GetComponent<Rigidbody>();
-            var springTorque = uprightTorque * Vector3.Cross(rb.transform.up, Vector3.up);
+            /*var springTorque = uprightTorque * Vector3.Cross(rb.transform.up, Vector3.up);
             var dampTorque = -rb.angularVelocity;
-            rb.AddTorque(springTorque + dampTorque, ForceMode.Acceleration);
+            rb.AddTorque(springTorque + dampTorque, ForceMode.Acceleration);*/
 
             var desiredPos = transform.position + bone.positionOffset;
             var currentDistance = Vector3.Distance(bone.bone.transform.position, desiredPos);
@@ -145,6 +152,7 @@ public class SoftBody : MonoBehaviour
                 var desiredDir = desiredPos - bone.bone.transform.position;
                 rb.AddForce(desiredDir * uprightForce);
             }
+
         }
     }
 
@@ -195,7 +203,7 @@ public class SoftBody : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         KeepUprightTorque();
         centerOfMass = CalculateCenterOfMass();
