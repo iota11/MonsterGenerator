@@ -19,6 +19,7 @@ public class Locomotion : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
         MoveRot(new Vector3(z, 0, -x));
+        Move(new Vector3(x, 0, z));
         ResetRotation();
     }
 
@@ -53,9 +54,10 @@ public class Locomotion : MonoBehaviour
         {
             foreach (Transform bone in limb.GetComponentsInChildren<Transform>())
             {
-                if (bone.childCount == 0 && Random.value >= 0.5)
+                if (bone.childCount < 2 && Random.value >= 0.5)
                 {
-                    bone.gameObject.GetComponent<Rigidbody>().AddForce(dir * force * Random.Range(0.25f, 0.75f));
+                    var force = dir * (bone.childCount >= 1 ? 0.25f : 2f);
+                    bone.gameObject.GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse);
                 }
             }
         }

@@ -24,9 +24,9 @@ public class SoftBody : MonoBehaviour
 
     private float bodyRadius = 1.0f;
 
-    private float massRadius = 0.0f;
-    private float nborRadius = 1.0f;
-    private float bendingRadius = 3.0f;
+    private float massRadius = 0.01f;
+    private float nborRadius = 0.5f;
+    private float bendingRadius = 1.5f;
 
     private void Awake()
     {
@@ -125,7 +125,7 @@ public class SoftBody : MonoBehaviour
             rb.drag = drag;
             rb.angularDrag = angularDrag;
 
-            //rb.constraints = RigidbodyConstraints.FreezeRotation;
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
 
             SphereCollider sc = bone.bone.AddComponent<SphereCollider>();
             sc.radius = massRadius;
