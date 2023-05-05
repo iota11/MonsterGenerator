@@ -270,13 +270,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e75ea695dcda46a0a6783d35d92d144, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mass: 1
+  mass: 0.5
   drag: 5
   angularDrag: 0.1
   damper: 10
-  spring: 15
+  spring: 30
   uprightTorque: 10
-  uprightForce: 30
+  uprightForce: 25
   centerOfMass: {x: 0, y: 0, z: 0}
 --- !u!114 &149697768
 MonoBehaviour:
