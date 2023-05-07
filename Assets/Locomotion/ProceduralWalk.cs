@@ -16,6 +16,7 @@ public enum BodyState
 }
 public class ProceduralWalk : MonoBehaviour
 {
+    public bool directControl = true;
     public List<ProceduralLeg> legsList;
     public Transform hipTransform;
     private Quaternion hipInitialRotation;
@@ -58,6 +59,7 @@ public class ProceduralWalk : MonoBehaviour
 
     private float firstlegTstall = 0.0f;
     private float initialPosY;
+    private RemoteLocomote RL;
     void Start()
     {
         m_transform = this.GetComponent<Transform>();
@@ -67,7 +69,7 @@ public class ProceduralWalk : MonoBehaviour
         initialCenterDis = GetCenterDis();
         stableRotationY = m_transform.eulerAngles.y;
         hipInitialRotation = hipTransform.rotation;
-
+        RL = this.GetComponent<RemoteLocomote>();
         int layerMask = 1 << 6;
         RaycastHit hit;
         Vector3 rayStartpoint = m_transform.position + new Vector3(0, 10.0f, 0);
@@ -249,30 +251,42 @@ public class ProceduralWalk : MonoBehaviour
         }
     }
 
-    private Vector3 Locomote()
+    public Vector3 Locomote()
     {
-
-        //control rotation
-        if (Input.GetKey(KeyCode.E))
-        {
-            m_transform.Rotate(m_transform.up, Time.deltaTime*10*rotateSpeed);
+        float x = 0;
+        float z = 0;
+        float rotate = 0;
+        if (directControl) {
+            //control rotation
+            if (Input.GetKey(KeyCode.E)) {
+                rotate = 1;
+            }
+            if (Input.GetKey(KeyCode.Q)) {
+                rotate = -1;
+            }
+            if (Input.GetKey(KeyCode.Space)) {
+                speed += Time.deltaTime * acc;
+            }
+            if (Input.GetKey(KeyCode.C)) {
+                speed -= Time.deltaTime * acc;
+            }
+            x = Input.GetAxis("Horizontal");
+            z = Input.GetAxis("Vertical");
+        } else {
+            x = RL.x;
+            z = RL.z;
+            if (Input.GetKey(KeyCode.E)) {
+                rotate = 1;
+            }
+            if (Input.GetKey(KeyCode.Q)) {
+                rotate = -1;
+            }
+            speed = RL.speed;
         }
-        if (Input.GetKey(KeyCode.Q))
-        {
-            m_transform.Rotate(m_transform.up, -Time.deltaTime*10 * rotateSpeed);
-        }
-        if (Input.GetKey(KeyCode.Space))
-        {
-            speed +=Time.deltaTime*acc;
-        }
-        if (Input.GetKey(KeyCode.C))
-        {
-            speed -= Time.deltaTime*acc;
-        }
+        m_transform.Rotate(m_transform.up, Time.deltaTime *60 * rotate);
         speed = Mathf.Clamp(speed, minSpeed, maxSpeed);
         //control movement
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
+
 
         int layerMask = 1 << 6;
         RaycastHit hit;

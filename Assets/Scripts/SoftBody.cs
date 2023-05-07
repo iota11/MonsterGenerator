@@ -10,6 +10,11 @@ public class SoftBody : MonoBehaviour
 {
     private List<GameObject> rig = new List<GameObject>();
     private List<Bone> bones = new List<Bone>();
+    private List<Bone> ctrl_bones = new List<Bone>();
+    public GameObject ctrl_up;
+    public GameObject ctrl_forward;
+    public GameObject ctrl_root;
+
     public float mass;
     public float drag;
     public float angularDrag;
@@ -25,14 +30,14 @@ public class SoftBody : MonoBehaviour
     private float bodyRadius = 1.0f;
 
     private float massRadius = 0.01f;
-    private float nborRadius = 0.5f;
-    private float bendingRadius = 1.5f;
+    public float nborRadius = 2;
+    private float bendingRadius = 2f;
 
     private void Awake()
     {
-        Rigidbody rb = transform.AddComponent<Rigidbody>();
-        rb.useGravity = false;
-        rb.constraints = RigidbodyConstraints.FreezeRotationY;
+       // Rigidbody rb = transform.AddComponent<Rigidbody>();
+       // rb.useGravity = true;
+        //rb.constraints = RigidbodyConstraints.FreezeRotationY;
 
         foreach (Transform limb in transform)
         {
@@ -48,10 +53,13 @@ public class SoftBody : MonoBehaviour
         {
             var parentPos = bone.parent.position;
             Bone b = new Bone(bone.gameObject, limb, rootPosition, bone.rotation);
-            bones.Add(b);
+            bones.Add(b);  
+            if(bone.gameObject.transform.position.y > 4 && (UnityEngine.Random.value > 0.7)) {
+                ctrl_bones.Add(b);
+            }
         }
     }
-
+    /*
     void ConnectBonesSimple()
     {
         foreach (Bone b1 in bones)
@@ -72,7 +80,7 @@ public class SoftBody : MonoBehaviour
             }
         }
     }
-
+    */
     void ConnectBones()
     {
         //neighboring springs
@@ -81,23 +89,7 @@ public class SoftBody : MonoBehaviour
             {
                 var distance = Vector3.Distance(b1.bone.transform.position, b2.bone.transform.position);
                 if (b1 != b2 && distance < nborRadius)
-                {
-                    SpringJoint sj = b1.bone.AddComponent<SpringJoint>();
-                    sj.spring = spring;
-                    sj.damper = damper;
-                    sj.connectedBody = b2.bone.GetComponent<Rigidbody>();
-                }
-            }
-        }
-
-        //bending springs
-        foreach (Bone b1 in bones)
-        {
-            foreach (Bone b2 in bones)
-            {
-                var distance = Vector3.Distance(b1.bone.transform.position, b2.bone.transform.position);
-                if (b1 != b2 && distance > nborRadius && distance < bendingRadius)
-                {
+               {
                     SpringJoint sj = b1.bone.AddComponent<SpringJoint>();
                     sj.spring = spring;
                     sj.damper = damper;
@@ -125,13 +117,17 @@ public class SoftBody : MonoBehaviour
             rb.drag = drag;
             rb.angularDrag = angularDrag;
 
-            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            //rb.constraints = RigidbodyConstraints.FreezeRotation;
 
             SphereCollider sc = bone.bone.AddComponent<SphereCollider>();
             sc.radius = massRadius;
         }
 
         ConnectBones();
+        ctrl_up.GetComponent<Rigidbody>().isKinematic = true;
+        ctrl_root.GetComponent<Rigidbody>().isKinematic = true;
+        //ctrl_forward.GetComponent<Rigidbody>().isKinematic = true;
+
     }
 
     void KeepUprightTorque()
@@ -205,7 +201,14 @@ public class SoftBody : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        KeepUprightTorque();
-        centerOfMass = CalculateCenterOfMass();
+       // keepUpright();
+         centerOfMass = CalculateCenterOfMass();
+    }
+    void keepUpright() {
+        foreach(Bone b in ctrl_bones) {
+            if(b.bone.transform.position.y < 2f) {
+                b.bone.GetComponent<Rigidbody>().AddForce(new Vector3(0, 10f, 0), ForceMode.Impulse);
+            }
+        }
     }
 }
