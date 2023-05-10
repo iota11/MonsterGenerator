@@ -14,7 +14,7 @@ public class SoftBody : MonoBehaviour
     public GameObject ctrl_up;
     public GameObject ctrl_forward;
     public GameObject ctrl_root;
-
+    public bool showParticles = false;
     public float mass;
     public float drag;
     public float angularDrag;
@@ -122,7 +122,7 @@ public class SoftBody : MonoBehaviour
             SphereCollider sc = bone.bone.AddComponent<SphereCollider>();
             sc.radius = massRadius;
         }
-
+         
         ConnectBones();
         ctrl_up.GetComponent<Rigidbody>().isKinematic = true;
         ctrl_root.GetComponent<Rigidbody>().isKinematic = true;
@@ -193,9 +193,13 @@ public class SoftBody : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        // Draw a yellow sphere at the transform's position
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(centerOfMass, 1);
+        if (showParticles) {
+            // Draw a yellow sphere at the transform's position
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(centerOfMass + new Vector3(0, 0, -3), 1);
+            Gizmos.color = Color.blue;
+            Gizmos.DrawSphere(ctrl_root.transform.position + new Vector3(0, 0, -3), 1);
+        }
     }
 
     // Update is called once per frame

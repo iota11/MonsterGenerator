@@ -115,7 +115,8 @@ public class ProceduralLeg: MonoBehaviour
         if ((lerp < 1) && m_state == LegState.move)
         {
             Vector3 footpos = Vector3.Lerp(oldPos, newPos, lerp);
-            footpos.y += footHeight(lerp) * heightScale;
+            Vector3 dis = newPos - oldPos;
+            footpos.y += footHeight(lerp) * dis.magnitude*2f;
             curPos = footpos;
             m_transform.position = curPos;
             lerp += deltaTime/moveTime;
@@ -166,5 +167,7 @@ public class ProceduralLeg: MonoBehaviour
     {
         return Mathf.Sin(lerp * Mathf.PI) * 0.3f;
     }
+
+
 
 }

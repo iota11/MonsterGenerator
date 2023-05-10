@@ -127,7 +127,7 @@ public class ProceduralWalk : MonoBehaviour
         foreach(ProceduralLeg leg in legsList)
         {
             leg.moveTime = legMoveTime;
-            leg.heightScale = legMoveHight;
+            //leg.heightScale = legMoveHight;
         }
     }
     private float GetCenterDis()
